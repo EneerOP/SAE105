@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/cyborg/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #2c3e50; /* Couleur de fond */
+            color: #ecf0f1; /* Couleur de texte */
+            padding-top: 50px;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 100%; /* Utilisation de la largeur complète de la page */
+        }
+
+        .btn-execute {
+            margin-bottom: 20px;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            border: 1px solid #34495e; /* Bordure */
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #34495e; /* Fond */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* Défilement horizontal si nécessaire */
+        }
+
+        .custom-table-container {
+            overflow-x: auto; /* Défilement horizontal si nécessaire */
+            text-align: center; /* Centrage du tableau */
+        }
+
+        .custom-table {
+            width: 100%; /* Utilisation de la largeur complète du conteneur */
+            margin-top: 20px;
+            color: #ecf0f1; /* Couleur du texte dans le tableau */
+        }
+
+        .custom-table th,
+        .custom-table td {
+            border: 1px solid #2c3e50; /* Bordure */
+            padding: 12px;
+            text-align: left;
+            background-color: #34495e; /* Fond des cellules du tableau */
+        }
+
+        .btn-download {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2 class="mb-4">Contenu de la page</h2>
+
+        <!-- Formulaire pour exécuter le script Python -->
+        <form method="post" action="{{ path('app_exec') }}">
+            <button type="submit" class="btn btn-primary btn-execute">Exécuter le code Python</button>
+        </form>
+
+        <!-- Affichage du contenu HTML généré -->
+        <div class="result-section">
+            {% if html_content is defined %}
+            <h3 class="mb-3">Résultat HTML généré :</h3>
+            {{ html_content|raw }}
+            {% endif %}
+        </div>
+
+        <!-- Affichage des 15 premières lignes du CSV -->
+        <div class="result-section custom-table-container">
+            {% if csv_data is not empty %}
+            <h3 class="mb-3">15 premières lignes du CSV :</h3>
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            {% for header in csv_data[0] %}
+                            <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set limit = 15 %}
+                        {% for row in csv_data|slice(1, limit) %}
+                        <tr>
+                            {% for value in row %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if csv_data|length > limit %}
+            <!-- Bouton pour afficher toutes les lignes -->
+            <button id="showAllRows" class="btn btn-secondary">Afficher toutes les lignes</button>
+            {% endif %}
+            <!-- Bouton de téléchargement centré -->
+            <div class="text-center btn-download">
+                <a href="{{ path('download_csv') }}" class="btn btn-primary">Télécharger le fichier CSV</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Mettez vos balises script ici selon vos besoins -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cacher les lignes supplémentaires initialement
+            document.querySelector('.custom-table').classList.add('truncate-table');
+
+            // Ajouter un gestionnaire d'événement pour le bouton
+            document.getElementById('showAllRows').addEventListener('click', function () {
+                document.querySelector('.custom-table').classList.remove('truncate-table');
+                this.style.display = 'none'; // Cacher le bouton après avoir affiché toutes les lignes
+            });
+        });
+    </script>
+</body>
+
+</html>

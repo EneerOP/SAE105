@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Couleur de fond légèrement grise */
+            color: #343a40; /* Couleur de texte noire */
+        }
+        .container {
+            margin-top: 50px; /* Ajout d'un espace en haut */
+        }
+        .btn-execute {
+            margin-bottom: 20px; /* Ajout d'un espace en bas */
+        }
+        .result-section {
+            margin-top: 20px; /* Ajout d'un espace en haut */
+        }
+        .custom-table {
+            width: 100%; /* Utilisation de la largeur complète */
+            margin-top: 20px; /* Ajout d'un espace en haut */
+        }
+        .custom-table th, .custom-table td {
+            border: 1px solid #dee2e6; /* Utilisation d'une couleur de bordure légère */
+            padding: 12px; /* Augmentation de la marge intérieure */
+            text-align: left;
+            background-color: #f8f9fa;
+        }
+        .btn-download {
+            margin-top: 20px;
+            margin-bottom: 40px; /* Augmentation de l'espace en bas */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="mb-4">Contenu de la page</h2>
+
+    <!-- Formulaire pour exécuter le script Python -->
+    <form method="post" action="{{ path('app_exec') }}">
+        <button type="submit" class="btn btn-primary btn-execute">Exécuter le code Python</button>
+    </form>
+
+    <!-- Affichage du contenu HTML généré -->
+    <div class="result-section">
+        {% if html_content is defined %}
+            <h3>Résultat HTML généré :</h3>
+            {{ html_content|raw }}
+        {% endif %}
+    </div>
+
+    <!-- Affichage des 15 premières lignes du CSV -->
+    <div class="result-section">
+        {% if csv_data is not empty %}
+            <h3>15 premières lignes du CSV :</h3>
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        {% for header in csv_data[0] %}
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in csv_data|slice(1, 16) %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Bouton de téléchargement centré -->
+            <div class="text-center btn-download">
+                <a href="{{ path('download_csv') }}" class="btn btn-primary">Télécharger le fichier CSV</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Mettez vos balises script ici selon vos besoins -->
+
+</body>
+</html>
